@@ -976,33 +976,42 @@
               pauseAwareTimeout(advancePhaseImage, 2000);
             }
 
-            // Advance within phase, prefetching more as needed
+            // Advance within phase, prefetching more as needed, with 1s hide and 2s display
             function advancePhaseImage() {
               btn.disabled = true;
               btn.style.opacity = "0.5";
               var phase = phases[currentPhaseIndex];
 
               if (currentImageIndex < phase.filenames.length - 1) {
-                currentImageIndex++;
-
-                // If we're within PREFETCH_THRESHOLD of what we've loaded, fetch another PREFETCH_SIZE
-                if (currentImageIndex + PREFETCH_THRESHOLD > highestLoadedIndex &&
-                    highestLoadedIndex < phase.filenames.length - 1) {
-                  var start = highestLoadedIndex + 1;
-                  var end   = Math.min(highestLoadedIndex + PREFETCH_SIZE, phase.filenames.length - 1);
-                  var more  = [];
-                  for (var j = start; j <= end; j++) more.push(j);
-                  preloadImages(more);
-                  highestLoadedIndex = end;
-                }
-
-                var fn = phase.filenames[currentImageIndex];
+                // hide shifted image for 1 second
                 var shiftImg = document.getElementById("exp-shift-image");
-                shiftImg.src = baseImageURL + encodeURIComponent(fn);
-                shiftImg.style.visibility = "visible";
-                btn.disabled = false;
-                btn.style.opacity = "1";
-                pauseAwareTimeout(advancePhaseImage, 2000);
+                shiftImg.style.visibility = "hidden";
+
+                // after 1s, load and show next
+                pauseAwareTimeout(function () {
+                  currentImageIndex++;
+
+                  // prefetch if within threshold
+                  if (currentImageIndex + PREFETCH_THRESHOLD > highestLoadedIndex &&
+                      highestLoadedIndex < phase.filenames.length - 1) {
+                    var start = highestLoadedIndex + 1;
+                    var end   = Math.min(highestLoadedIndex + PREFETCH_SIZE, phase.filenames.length - 1);
+                    var more  = [];
+                    for (var j = start; j <= end; j++) more.push(j);
+                    preloadImages(more);
+                    highestLoadedIndex = end;
+                  }
+
+                  var fn = phase.filenames[currentImageIndex];
+                  shiftImg.src = baseImageURL + encodeURIComponent(fn);
+                  shiftImg.style.visibility = "visible";
+                  btn.disabled = false;
+                  btn.style.opacity = "1";
+
+                  // display for 2 seconds
+                  pauseAwareTimeout(advancePhaseImage, 2000);
+                }, 1000);
+
               } else {
                 moveToNextPhase();
               }
