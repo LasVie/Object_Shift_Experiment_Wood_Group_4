@@ -1095,7 +1095,7 @@
   </script>
 
   <script>
-    /*************** 8) Final Survey Code Page ***************/
+    /*************** 8) Final Survey Code Page ****************/
     var finalCodeTrial = {
       type: jsPsychHtmlButtonResponse,
       stimulus: function () {
@@ -1107,9 +1107,20 @@
           </div>
         `;
       },
-      choices: ['Finish']
+      choices: ['Finish'],
+
+      /* NEW – close the tab/window when Finish is pressed */
+      on_finish: function () {
+        /* give the DOM a single animation frame so the click feels “acknowledged” */
+        requestAnimationFrame(() => {
+          /* Work around browsers that block window.close() on non-scripted windows */
+          window.open('', '_self');   // make the current tab “script-opened”
+          window.close();             // and close it
+        });
+      }
     };
   </script>
+
 
   <script>
     /*********************************************************
