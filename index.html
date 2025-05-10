@@ -275,9 +275,8 @@
 
   <script>
     var objectNames = [
-      //"Book Shelves", 
-      "Chess", 
-      //"Wheel", "Food Platter", "Fruits",
+      "Book Shelves", 
+      //"Chess", "Wheel", "Food Platter", "Fruits",
       //"Humming Bird", "Plant", "Swing", "Vase", "Wood"
     ];
     var groups = {
@@ -294,16 +293,37 @@
   </script>
 
   <script>
+    // CACHING FOR IMAGE FILENAMES
+    window._allFilenamesPromise = null;
+    window._filenameListCache = {};
+
     function fetchImageFilenames(searchKey) {
-      return fetch("https://lasvientuexperimentdata.s3.ap-southeast-1.amazonaws.com/Rendered+Images/filenames.json")
+      // 1) Lazy-load the full JSON exactly once:
+      if (!window._allFilenamesPromise) {
+        window._allFilenamesPromise = fetch(
+          "https://lasvientuexperimentdata.s3.ap-southeast-1.amazonaws.com/Rendered+Images/filenames.json",
+          { cache: "force-cache" }
+        )
         .then(response => {
-          if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
           return response.json();
-        })
+        });
+      }
+
+      // 2) If we've already filtered for this key, return the cached array:
+      if (window._filenameListCache[searchKey]) {
+        return Promise.resolve(window._filenameListCache[searchKey]);
+      }
+
+      // 3) Otherwise filter & sort once, cache the result, and return it:
+      return window._allFilenamesPromise
         .then(data => {
-          var matchingFiles = data.filter(file => file.name.indexOf(searchKey) !== -1);
-          matchingFiles.sort((a, b) => a.name.localeCompare(b.name));
-          return matchingFiles.map(file => file.name);
+          const matching = data
+            .filter(file => file.name.includes(searchKey))
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(file => file.name);
+          window._filenameListCache[searchKey] = matching;
+          return matching;
         });
     }
   </script>
@@ -567,14 +587,14 @@
           if (!shiftImg) return;
           shiftImg.style.visibility = "hidden";
 
-          // In-between transition: 1000ms --> 500ms
+          // In-between transition: 1000ms → 500ms
           pauseAwareTimeout(function () {
             currentIndex++;
             shiftImg.src = demoImages[currentIndex].src;
             shiftImg.style.visibility = "visible";
             btn.disabled = false;
             btn.style.opacity = "1";
-            // Blink/update freq: 3000ms --> 2000ms
+            // Blink/update freq: 3000ms → 2000ms
             pauseAwareTimeout(nextImage, 2000);
           }, 500);
         }
@@ -630,7 +650,7 @@
           btn.style.display = "inline-block";
           btn.disabled = false;
           btn.style.opacity = "1";
-          // First update: 3000ms -> 2000ms
+          // First update: 3000ms → 2000ms
           pauseAwareTimeout(nextImage, 2000);
         }
 
@@ -684,7 +704,7 @@
         </p>
       `,
       choices: ['Redo DEMO', 'START ACTUAL EXPERIMENT'],
-      on_finish: function () { /* Loop handled in timeline */ }
+      on_finish: function() { /* Loop handled in timeline */ }
     };
   </script>
 
