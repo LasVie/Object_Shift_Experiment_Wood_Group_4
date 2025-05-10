@@ -853,9 +853,9 @@
             ];
 
             const baseImageURL = "https://lasvientuexperimentdata.s3.ap-southeast-1.amazonaws.com/Rendered+Images/";
-            const INITIAL_CACHE_SIZE  = 10;  // preload first 10 shifts + original
-            const PREFETCH_THRESHOLD  = 5;   // when within 5 of cache end, fetch more
-            const PREFETCH_SIZE       = 5;   // fetch 5 more each time
+            const INITIAL_CACHE_SIZE  = 5;  // preload first 10 shifts + original
+            const PREFETCH_THRESHOLD  = 2;   // when within 5 of cache end, fetch more
+            const PREFETCH_SIZE       = 2;   // fetch 5 more each time
 
             var currentPhaseIndex = 0;
             var currentImageIndex = 0;
@@ -1101,9 +1101,9 @@
       stimulus: function () {
         return `
           <div style="text-align:center;">
-            <h2>Thank you for participating!</h2>
+            <h2>Response submitted!</h2>
+            <p>You may close this window now!</p>
             <p>Your unique survey code is: <strong>${window.participantID}</strong></p>
-            <p>Please copy this code and enter it in the HIT survey for verification.</p>
           </div>
         `;
       },
