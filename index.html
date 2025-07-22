@@ -510,7 +510,7 @@
       </p>
 
       <p style="max-width:800px;margin:0 auto 40px;font-size:17px;text-align:left;">
-        We require a 1920 × 1080 monitor (≈ 15.6″) at
+        We require a 1920 × 1080 monitor (≈ 14″) at
         <b>125 % OS scaling</b> and <b>100 % browser zoom</b>.
       </p>`;
 
@@ -606,7 +606,7 @@
           const mmPerPx = 85.6 / slide.value,
             diagIn = Math.hypot(screen.width, screen.height) *
               (mmPerPx / 25.4),
-            ok = (diagIn >= 15.3 && diagIn <= 15.9),
+            ok = (diagIn >= 13.7 && diagIn <= 14.3),
             clr = ok ? '#28a745' : '#d9534f';
 
           msg.textContent = ok
